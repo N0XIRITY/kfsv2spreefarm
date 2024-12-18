@@ -1,0 +1,76 @@
+-- Lua Script for Roblox: Persistent Teleportation GUI
+
+-- Variables
+local scriptActive = false
+local teleportPosition = Vector3.new(288.49, 37, -337.80)
+local player = game.Players.LocalPlayer
+
+-- Function to create the GUI
+local function createGui()
+    local screenGui = Instance.new("ScreenGui")
+    screenGui.Name = "TeleportGui"  -- Ensure unique name to avoid duplication
+    screenGui.Parent = player:WaitForChild("PlayerGui")
+
+    -- Create a button to toggle the script
+    local toggleButton = Instance.new("TextButton")  -- Create a TextButton
+    toggleButton.Text = "Toggle Teleport"
+    toggleButton.Size = UDim2.new(0, 200, 0, 50)  -- Adjust size as needed
+    toggleButton.Position = UDim2.new(0, 10, 0, 10)
+    toggleButton.Font = Enum.Font.GothamBold  -- Set a cool font
+    toggleButton.TextSize = 24  -- Set text size
+    toggleButton.TextColor3 = Color3.fromRGB(255, 51, 51) -- Set text color
+    toggleButton.BackgroundColor3 = Color3.fromRGB(102, 255, 178)  -- Set background color
+    toggleButton.BackgroundTransparency = 0  -- Make the background opaque
+    toggleButton.Parent = screenGui
+
+    -- Create a UICorner to give the button rounded corners
+    local corner = Instance.new("UICorner")
+    corner.CornerRadius = UDim.new(0, 20)  -- Adjust the radius for more or less rounding
+    corner.Parent = toggleButton
+
+    -- Connect the button's click event to the toggle function
+    toggleButton.MouseButton1Click:Connect(function()
+        scriptActive = not scriptActive
+        toggleButton.Text = scriptActive and "Teleport: On" or "Teleport: Off"
+    end)
+end
+
+-- Function to teleport the player
+local function teleportPlayer()
+    if not scriptActive then return end
+
+    local targetPart = nil
+
+    -- Search for parts named "speedbox"
+    for _, part in ipairs(workspace:GetDescendants()) do
+        if part:IsA("BasePart") and part.Name == "speedbox" then
+            targetPart = part
+            break
+        end
+    end
+
+    -- Teleport to the "speedbox" or default location
+    local character = player.Character
+    if targetPart then
+        character:SetPrimaryPartCFrame(targetPart.CFrame)
+    else
+        character:SetPrimaryPartCFrame(CFrame.new(teleportPosition))
+    end
+end
+
+-- Create GUI initially
+createGui()
+
+-- Recreate GUI and maintain state on respawn
+player.CharacterAdded:Connect(function()
+    -- Wait for the character to fully load before setting CFrame
+    player.Character:WaitForChild("HumanoidRootPart")
+    createGui()
+end)
+
+-- Run the teleportation function periodically
+game:GetService("RunService").RenderStepped:Connect(function()
+    if scriptActive then
+        teleportPlayer()
+    end
+end)
