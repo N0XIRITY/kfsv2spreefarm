@@ -15,7 +15,7 @@ local function createGui()
     local toggleButton = Instance.new("TextButton")  -- Create a TextButton
     toggleButton.Text = "Toggle Teleport"
     toggleButton.Size = UDim2.new(0, 200, 0, 50)  -- Adjust size as needed
-    toggleButton.Position = UDim2.new(0, 10, 0, 10)
+    toggleButton.Position = UDim2.new(0, 0, 0, 10)
     toggleButton.Font = Enum.Font.GothamBold  -- Set a cool font
     toggleButton.TextSize = 24  -- Set text size
     toggleButton.TextColor3 = Color3.fromRGB(255, 51, 51) -- Set text color
